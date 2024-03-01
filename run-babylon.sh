@@ -105,6 +105,17 @@ EOF
 
 }
 
+start_babylon_node() {
+    # Start the service and check the logs
+    sudo -S systemctl restart babylond
+    sudo journalctl -u babylond.service -f --no-hostname -o cat
+}
+
+check_node_status_and_height() {
+    babylond status | jq
+    systemctl status babylond
+}
+
 create_wallet_key() {
     echo -e "下面开始创建babylon钱包，会让你创建一个钱包密码..."
     babylond keys add wallet
@@ -117,17 +128,6 @@ create_wallet_key() {
 
     sudo -S systemctl daemon-reload
     sudo -S systemctl enable babylond
-}
-
-start_babylon_node() {
-    # Start the service and check the logs
-    sudo -S systemctl restart babylond
-    sudo journalctl -u babylond.service -f --no-hostname -o cat
-}
-
-check_node_status_and_height() {
-    babylond status | jq
-    systemctl status babylond
 }
 
 get_log() {
@@ -165,7 +165,6 @@ echo && echo -e " ${Red_font_prefix}babylon节点 一键安装脚本${Font_color
  ${Green_font_prefix} 3.检查节点状态 ${Font_color_suffix}
  ${Green_font_prefix} 4.显示同步日志 ${Font_color_suffix}
  ${Green_font_prefix} 5.成为验证者（需要等节点同步到最新区块） ${Font_color_suffix}
- ${Green_font_prefix} 6.创建钱包 ${Font_color_suffix}
  ———————————————————————" && echo
 read -e -p " 请参照教程执行以上步骤，请输入数字 [1-5]:" num
 case "$num" in
@@ -186,7 +185,7 @@ case "$num" in
     ;;
 6)
     create_wallet_key
-    ;;    
+    ;;
 *)
     echo
     echo -e " ${Error} 请输入正确的数字"
